@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.concurrency.domain.stock.Stock;
 import com.concurrency.domain.stock.repository.StockRepository;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.IntStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +18,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class StockServiceTest {
 
-    @Autowired private StockService stockService;
+//    @Autowired private StockService stockService;
+    @Autowired private PessimisticLockStockService stockService;
     @Autowired private StockRepository stockRepository;
 
     @BeforeEach
@@ -42,11 +43,12 @@ class StockServiceTest {
     @DisplayName("동시 요청 테스트")
     @Test
     public void concurrency() throws InterruptedException {
+        List<Stock> all = stockRepository.findAll();
         int threadCount = 100;
         ExecutorService executorService = Executors.newFixedThreadPool(32);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
-        IntStream.range(0, threadCount).forEach(i -> {
+        for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
                     stockService.decrease(1L, 1L);
@@ -54,7 +56,7 @@ class StockServiceTest {
                     latch.countDown();
                 }
             });
-        });
+        }
 
         latch.await();
 
