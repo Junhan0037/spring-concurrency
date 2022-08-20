@@ -1,4 +1,4 @@
-package com.concurrency.domain.stock.service;
+package com.concurrency.domain.stock.facade;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -16,10 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class StockServiceTest {
+class OptimisticLockStockFacadeTest {
 
-//    @Autowired private StockService stockService;
-    @Autowired private PessimisticLockStockService stockService;
+    @Autowired private OptimisticLockStockFacade optimisticLockStockFacade;
     @Autowired private StockRepository stockRepository;
 
     @BeforeEach
@@ -33,13 +32,6 @@ class StockServiceTest {
         stockRepository.deleteAll();
     }
 
-    @Test
-    public void stock_decrease() {
-        stockService.decrease(1L, 1L);
-        Stock stock = stockRepository.findById(1L).orElseThrow();
-        assertEquals(99, stock.getQuantity());
-    }
-
     @DisplayName("동시 요청 테스트")
     @Test
     public void concurrency() throws InterruptedException {
@@ -50,7 +42,9 @@ class StockServiceTest {
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    stockService.decrease(1L, 1L);
+                    optimisticLockStockFacade.decrease(1L, 1L);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 } finally {
                     latch.countDown();
                 }

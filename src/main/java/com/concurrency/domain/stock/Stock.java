@@ -1,5 +1,6 @@
 package com.concurrency.domain.stock;
 
+import javax.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,6 +23,9 @@ public class Stock {
     private Long productId;
 
     private Long quantity;
+
+    @Version
+    private Long version;
 
     public void decrease(Long quantity) {
         if (this.quantity - quantity < 0) {
