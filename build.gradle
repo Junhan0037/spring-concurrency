@@ -27,6 +27,7 @@ dependencies {
 
     // DB
     implementation 'com.h2database:h2'
+    implementation 'mysql:mysql-connector-java'
 
     // Util
     compileOnly 'org.projectlombok:lombok'
@@ -41,4 +42,9 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// plain jar 생성X
+jar {
+    enabled = false
 }
