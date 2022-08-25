@@ -28,8 +28,8 @@
       별도의 명령어로 해제를 수행하거나 선점시간이 끝나야 해제됩니다.
 
 
-3. Redis  
-   Redis 를 활용하여 동시성 문제를 해결하는 대표적인 2가지 라이브러리 소개
+3. Redis Distributed Lock  
+   Redis 의 기능을 활용해 동시성을 제어해 봅니다.
    - Lettuce  
       `setnx` 명령어를 활용하여 분산락 구현  
       `spin lock` 방식 (스레드가 lock 획득을 반복해서 시도)  
